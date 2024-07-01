@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+// tempoary data for debugging
+
 const data = [
     { id: 1, name: "ゲキヤバ！簡単に作れるゲキヤバEDM" },
     { id: 2, name: "ゲキカワうんちブリブリサイト｜ゲキカワの極意" },
@@ -7,6 +9,7 @@ const data = [
     { id: 4, name: "ゲキヤバ破壊" },
     { id: 5, name: "はい" },
 ];
+
 
 export default function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm } = req.query;
