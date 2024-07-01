@@ -1,27 +1,17 @@
 "use client";
 
-import React, { FormEvent, useState} from 'react';
+import React, { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
-
-  // Define the search term state
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
-  // Handle the form submit event
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-
-    console.log("Search term:", searchTerm);
-
-    // Perform the api request
-    const response = await fetch(`/api/search?searchterm=${encodeURIComponent(searchTerm)}`);
-    
-    const data = await response.json();
-
-    console.log("Search results:", data);
+    router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}`);
   };
 
-  // Render the form
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-transparent" style={{ transform: 'translateY(-10vh)' }}>
       <h1 className="text-4xl font-bold mb-8">GEKIYABA SEARCH</h1>
