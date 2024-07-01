@@ -8,9 +8,17 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Handle the form submit event
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    console.log('Search term:', searchTerm);
+
+    console.log("Search term:", searchTerm);
+
+    // Perform the api request
+    const response = await fetch(`/api/search?searchterm=${encodeURIComponent(searchTerm)}`);
+    
+    const data = await response.json();
+
+    console.log("Search results:", data);
   };
 
   // Render the form
