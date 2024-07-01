@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 
 type SearchResult = {
@@ -9,9 +10,16 @@ type SearchResult = {
 };
 
 const ResultsPage: React.FC = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const searchterm = searchParams?.get('searchterm');
+  const [searchTerm, setSearchTerm] = useState('' + searchterm);
   const [results, setResults] = useState<SearchResult[]>([]);
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}`);
+  };
 
   useEffect(() => {
     if (searchterm) {
@@ -21,24 +29,33 @@ const ResultsPage: React.FC = () => {
     }
   }, [searchterm]);
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Search Results for &quot;{searchterm}&quot;</h1>
-        {results.length > 0 ? (
-          <ul>
-            {results.map((result) => (
-              <li key={result.id} className="mb-4 p-4 bg-white shadow rounded">
-                <h3 className="text-lg font-bold">{result.name}</h3>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No results found.</p>
-        )}
-      </div>
-    </div>
-  );
+return (
+    <>
+        <div className="flex flex-col items-center justify-start min-h-screen bg-transparent mb-0" style={{ transform: 'translateY(vh0)', marginTop: '20px' }}>
+            <form onSubmit={handleSubmit} className="w-full max-w-md mb-2">
+                <div className="flex items-center border-b border-b-2 border-teal-500 py-2">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                        placeholder="Search..."
+                    />
+                    <button type="submit" className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded">Search</button>
+                </div>
+            </form>
+
+            <p className="text-sm text-gray-500 text-left" >Search Results for &quot;{searchterm}&quot;</p>
+
+
+        </div>
+
+        <div>
+            
+        </div>
+    
+    </>
+);
 };
 
 export default ResultsPage;
