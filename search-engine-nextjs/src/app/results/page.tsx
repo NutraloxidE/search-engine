@@ -47,6 +47,13 @@ return (
 
             <p className="text-sm text-gray-500 text-left" >Search Results for &quot;{searchterm}&quot;</p>
 
+            {/* Results */}
+            <ul className="list-disc text-left">
+                {results.map((result) => (
+                    <li key={result.id}>{result.name}</li>
+                ))}
+            </ul>
+
 
         </div>
 
