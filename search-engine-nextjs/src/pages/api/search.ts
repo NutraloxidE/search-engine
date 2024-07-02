@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
-// tempoary data for debugging
+import connectDB from '../../utils/db';
+import Data from '../../utils/Data';
 
 const data = [
     { id: 1, name: "ゲキヤバ！簡単に作れるゲキヤバEDM" },
@@ -9,7 +9,6 @@ const data = [
     { id: 4, name: "ゲキヤバ破壊" },
     { id: 5, name: "はい" },
 ];
-
 
 export default function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm } = req.query;
