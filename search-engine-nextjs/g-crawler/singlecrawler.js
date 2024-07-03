@@ -43,16 +43,30 @@ async function crawlPage(url) {
     // Close the browser
     await browser.close();
 
-    // Add the data to the database
-    const newData = await Data.create({
-      id: 1,
-      title: data.title,
-      url: url,
-      about: data.metaDescription,
-      textSnippet: data.textSnippet,
-      fetchedAt: new Date()
-    });
-    console.log('New document created:', newData);
+    // Check if the URL already exists in the database
+    let existingData = await Data.findOne({ url: url });
+
+    if (existingData) {
+      // If the URL exists, update the existing data
+      existingData.title = data.title;
+      existingData.about = data.metaDescription;
+      existingData.textSnippet = data.textSnippet;
+      existingData.fetchedAt = new Date();
+      await existingData.save();
+      console.log('Existing document updated:', existingData);
+    } else {
+      // If the URL does not exist, create new data
+      const newData = await Data.create({
+        id: 1,
+        title: data.title,
+        url: url,
+        about: data.metaDescription,
+        textSnippet: data.textSnippet,
+        fetchedAt: new Date()
+      });
+      console.log('New document created:', newData);
+    }
+
     mongoose.connection.close();
 
   } catch (error) {
@@ -62,7 +76,7 @@ async function crawlPage(url) {
 }
 
 async function textSnippetUnneededStringRemoval(textSnippet, targetURL) {
-  let finalTextLength = 220;
+  let finalTextLength = 300;
   
   //get the domain name from the targetURL
   let domainName = new URL(targetURL).hostname;
@@ -106,8 +120,11 @@ async function textSnippetUnneededStringRemoval(textSnippet, targetURL) {
    * Finalize the textSnippet
    */
 
-  //remove spaces from the textSnippet
+  //remove new lines and carriage returns
   textSnippet = textSnippet.replace(/[\n\r]+/g, ' ');
+
+  //remove replace double spaces with single spaces
+  textSnippet = textSnippet.replace(/  +/g, ' ');
 
   //make it smaller then finaltextlength
   textSnippet = textSnippet.substring(0, finalTextLength);
