@@ -51,13 +51,15 @@ return (
             <p className="text-sm text-gray-500 text-left" >Search Results for &quot;{searchterm}&quot;</p>
 
             {/* Results */}
-            <ul className="list-disc text-left">
+            <ul className="space-y-6">
               {results.map((result) => (
-                <li key={result.id}>
-                  <h2>{result.title}</h2>
-                  <p>{result.about}</p>
-                  <p>{result.textSnippet}</p>
-                  <a href={result.url} target="_blank" rel="noopener noreferrer">Read more</a>
+                <li key={result.id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200">
+                  <h2 className="text-lg font-semibold text-blue-600 hover:underline">
+                    <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
+                  </h2>
+                  <p className="text-gray-600">{result.about.length > 100 ? result.about.substring(0, 100) + '...' : result.about}</p>
+                  <p className="text-gray-800">{result.textSnippet.length > 100 ? result.textSnippet.substring(0, 100) + '...' : result.textSnippet}</p>
+                  <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Read more</a>
                 </li>
               ))}
             </ul>

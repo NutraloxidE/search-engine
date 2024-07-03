@@ -15,10 +15,11 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         $or: [
             { title: { $regex: new RegExp(searchterm as string, 'i') } },
             { about: { $regex: new RegExp(searchterm as string, 'i') } },
-            { textSnippet: { $regex: new RegExp(searchterm as string, 'i') } }
+            { textSnippet: { $regex: new RegExp(searchterm as string, 'i') } },
+            { url: { $regex: new RegExp(searchterm as string, 'i') } } // 追加した行
         ]
     });
-
+    
     // Return the results
     res.status(200).json(results);
 }
