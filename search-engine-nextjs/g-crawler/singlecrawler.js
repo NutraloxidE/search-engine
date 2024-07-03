@@ -20,13 +20,17 @@ async function crawlPage(url) {
 
     // Extract the raw text snippet from the page
     let rawTextSnippet = await page.evaluate(() => {
-      return document.body.innerText.substring(0, 500);
+      return document.body.innerText.substring(0, 700);
     });
 
     // Process the text snippet
     let textSnippet = await textSnippetUnneededStringRemoval(rawTextSnippet, url);
 
-    const data = await page.evaluate((textSnippet) => {
+    // Extract related URLs from rawTextSnippet
+    let relatedUrls = Array.from(rawTextSnippet.matchAll(/https?:\/\/[^\s]+/g)).map(match => match[0]);
+
+
+    const data = await page.evaluate((textSnippet, relatedUrls) => {
       const titleElement = document.querySelector('head > title');
       const title = titleElement ? titleElement.innerText : "No title available";
     
@@ -36,9 +40,8 @@ async function crawlPage(url) {
         metaDescriptionElement = document.querySelector('head > meta[property="og:description"]');
         metaDescription = metaDescriptionElement ? metaDescriptionElement.getAttribute('content') : "No description available";
       }
-    
-      return { title, metaDescription, textSnippet };
-    }, textSnippet);
+      return { title, metaDescription, textSnippet, relatedUrls };
+    }, textSnippet, relatedUrls);
 
     // Close the browser
     await browser.close();
@@ -51,6 +54,7 @@ async function crawlPage(url) {
       existingData.title = data.title;
       existingData.about = data.metaDescription;
       existingData.textSnippet = data.textSnippet;
+      existingData.relatedUrls = relatedUrls; // Update related URLs
       existingData.fetchedAt = new Date();
       await existingData.save();
       console.log('Existing document updated:', existingData);
@@ -62,6 +66,7 @@ async function crawlPage(url) {
         url: url,
         about: data.metaDescription,
         textSnippet: data.textSnippet,
+        relatedUrls: relatedUrls, // Save related URLs
         fetchedAt: new Date()
       });
       console.log('New document created:', newData);
