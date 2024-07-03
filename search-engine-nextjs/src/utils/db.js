@@ -1,16 +1,10 @@
+require('dotenv').config({ path: '../.env.local' });
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect('your_mongodb_atlas_connection_uri', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  }
-};
+function connectDB() {
+  mongoose.connect(process.env.MONGODB_URI,{dbName: process.env.DB_NAME_FOR_WEB_INDEX})
+    .then(() => console.log('db.js:MongoDB connected...'))
+    .catch(err => console.log('db.js:MongoDB connection error:', err));
+}
 
 module.exports = connectDB;

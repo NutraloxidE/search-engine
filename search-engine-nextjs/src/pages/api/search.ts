@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import mongoose from "mongoose";
 import connectDB from '../../utils/db';
 import Data from '../../utils/Data';
+
 
 const data = [
     { id: 1, name: "ゲキヤバ！簡単に作れるゲキヤバEDM" },
@@ -12,6 +14,8 @@ const data = [
 
 export default function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm } = req.query;
+
+    connectDB();
 
     console.log("Search term:", req.query.searchterm);
 
