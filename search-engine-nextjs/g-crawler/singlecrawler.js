@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const connectDB = require('../src/utils/db.js');
 const puppeteer = require('puppeteer');
 
+//static data
+let lastRelatedUrls = [];
+
 // Connect to the database
 connectDB();
 
