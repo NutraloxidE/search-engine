@@ -3,24 +3,21 @@ import mongoose from "mongoose";
 import connectDB from '../../utils/db';
 import Data from '../../utils/Data';
 
-
-const data = [
-    { id: 1, name: "ゲキヤバ！簡単に作れるゲキヤバEDM" },
-    { id: 2, name: "ゲキカワうんちブリブリサイト｜ゲキカワの極意" },
-    { id: 3, name: "げきうんちうんちうんちうんちうんち" },
-    { id: 4, name: "ゲキヤバ破壊" },
-    { id: 5, name: "はい" },
-];
-
-export default function handler (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm } = req.query;
 
-    connectDB();
+    await connectDB();
 
     console.log("Search term:", req.query.searchterm);
 
-    // Filter the data based on the search term
-    const results = data.filter(item => item.name.includes(searchterm as string));
+    // Search the database for the search term
+    const results = await Data.find({
+        $or: [
+            { title: { $regex: new RegExp(searchterm as string, 'i') } },
+            { about: { $regex: new RegExp(searchterm as string, 'i') } },
+            { textSnippet: { $regex: new RegExp(searchterm as string, 'i') } }
+        ]
+    });
 
     // Return the results
     res.status(200).json(results);

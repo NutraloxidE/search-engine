@@ -6,7 +6,10 @@ import { useSearchParams } from 'next/navigation';
 
 type SearchResult = {
   id: number;
-  name: string;
+  title: string;
+  about: string;
+  textSnippet: string;
+  url: string;
 };
 
 const ResultsPage: React.FC = () => {
@@ -49,9 +52,14 @@ return (
 
             {/* Results */}
             <ul className="list-disc text-left">
-                {results.map((result) => (
-                    <li key={result.id}>{result.name}</li>
-                ))}
+              {results.map((result) => (
+                <li key={result.id}>
+                  <h2>{result.title}</h2>
+                  <p>{result.about}</p>
+                  <p>{result.textSnippet}</p>
+                  <a href={result.url} target="_blank" rel="noopener noreferrer">Read more</a>
+                </li>
+              ))}
             </ul>
 
 
