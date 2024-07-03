@@ -1,12 +1,15 @@
-const singlecrawler = require('./singlecrawler');
+const { default: mongoose } = require('mongoose');
+const Crawler = require('./singlecrawler');
 
 async function crawlFarther(url, depth) {
   if (depth === 0) {
     return;
   }
-  const urls = await singlecrawler(url);
+  const crawler = new Crawler();
+  const urls = await crawler.crawlPage(url);
   for (let i = 0; i < urls.length; i++) {
-    await crawlFarther(urls[i], depth - 1);
+    const crawlerForLoop = new Crawler();
+    await crawlerForLoop.crawlPage(urls[i]);
   }
 }
 
@@ -14,5 +17,14 @@ async function crawlFarther(url, depth) {
 if (require.main === module) {
   const url = process.argv[2] || "https://x.com/r1cefarm";
   const depth = process.argv[3] || 2;
-  crawlFarther(url, depth);
+
+  (async () => {
+    try {
+      await crawlFarther(url, depth);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      mongoose.connection.close();
+    }
+  })();
 }

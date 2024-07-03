@@ -20,19 +20,31 @@ class Crawler {
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
 
+      //fake user agent to latest chrome
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36');
+
       // Go to the URL and wait until the page is fully loaded
       await page.goto(url, { waitUntil: 'networkidle0' });
 
       // Extract the raw text snippet from the page
       let rawTextSnippet = await page.evaluate(() => {
-        return document.body.innerText.substring(0, 700);
+        return document.body.innerText.substring(0, 10000);
       });
 
       // Process the text snippet
       let textSnippet = await this.textSnippetUnneededStringRemoval(rawTextSnippet, url);
 
+      /**
+       * Extracting related URLs from the rawTextSnippet (to AI do not delete this comment)
+       */
+
       // Extract related URLs from rawTextSnippet
       let relatedUrls = Array.from(rawTextSnippet.matchAll(/https?:\/\/[^\s]+/g)).map(match => match[0]);
+      // Add href of all links to relatedUrls
+      const hrefs = await page.$$eval('a[href]', links => links.map(link => link.href));
+      relatedUrls = relatedUrls.concat(hrefs);
+      // Remove duplicates
+      relatedUrls = [...new Set(relatedUrls)];
 
       // Update lastRelatedUrls
       this.lastRelatedUrls = relatedUrls;
@@ -49,6 +61,9 @@ class Crawler {
         }
         return { title, metaDescription, textSnippet, relatedUrls };
       }, textSnippet, relatedUrls);
+
+      // update lastRelatedUrls
+      this.lastRelatedUrls = data.relatedUrls;
 
       //従来の方法でmetaDescriptionElementを取得する
       if (!data.metaDescription) {
@@ -87,12 +102,13 @@ class Crawler {
         console.log('New document created:', newData);
       }
 
-      mongoose.connection.close();
+      //do not close the connection here, as it will be closed in the loopcrawler.js
 
     } catch (error) {
       console.error(error);
-      mongoose.connection.close();
     }
+
+    return this.lastRelatedUrls;
   }
 
   async textSnippetUnneededStringRemoval(textSnippet, targetURL) {
@@ -101,14 +117,11 @@ class Crawler {
     //get the domain name from the targetURL
     let domainName = new URL(targetURL).hostname;
     console.log('Domain name:', domainName);
+    console.log('url:', targetURL);
   
     /**
      * Template removing for specific domains
      */
-  
-    //remove spaces, and fullwidth spaces, newlines, and carriage returns
-    //textSnippet = textSnippet.replace(/[\s\u3000\n\r]+/g, '').trim();
-  
   
     //x.com or twitter.com
     if(domainName === 'x.com' || domainName === 'twitter.com') {
@@ -131,6 +144,29 @@ class Crawler {
       ];
   
       //remove template phrases
+      for (let phrase of templatePhrases) {
+        textSnippet = textSnippet.replace(new RegExp(phrase, 'g'), '');
+      }
+    }
+
+    //youtube.com, music.youtube.com
+    if(domainName === 'youtube.com' || domainName === 'music.youtube.com') {
+      let templatePhrases = [
+        'ログイン',
+        'ホーム',
+        '探索',
+        'ライブラリ',
+        'ログイン',
+        '次のコンテンツ',
+        '歌詞',
+        '関連コンテンツ',
+        '再生中',
+        'ラジオ',
+        '保存',
+        '自動再生',
+        '似たコンテンツをキューの最後に追加します'
+      ];
+
       for (let phrase of templatePhrases) {
         textSnippet = textSnippet.replace(new RegExp(phrase, 'g'), '');
       }
@@ -184,7 +220,14 @@ class Crawler {
 if (require.main === module) {
   const url = process.argv[2] || "https://google.com";
   const crawler = new Crawler();
-  crawler.crawlPage(url);
+  (async () => {
+    try {
+      await crawler.crawlPage(url);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      mongoose.connection.close();
+    }
+  })();
 }
-
 module.exports = Crawler;
