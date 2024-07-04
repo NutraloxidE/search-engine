@@ -1,10 +1,13 @@
+// src/components/SearchBar.tsx
+
 'use client';
 
-import React, { FormEvent, useState, useEffect } from 'react';
+import React, { FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearch } from '../app/context/SearchContext';
 
 export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { searchTerm, setSearchTerm, setIsSearchComplete, isSearchComplete } = useSearch();
   const router = useRouter();
 
   useEffect(() => {
@@ -13,10 +16,13 @@ export default function SearchBar() {
     if (searchterm) {
       setSearchTerm(searchterm);
     }
-  }, []);
+  }, [setSearchTerm]);
+
+  
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    setIsSearchComplete(false); // 検索の開始時に完了フラグをリセット
     router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}`);
   };
 

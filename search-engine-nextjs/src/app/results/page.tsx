@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import SearchBar from '../../components/SearchBar'; 
 
 type SearchResult = {
+  _id: string;
   id: number;
   title: string;
   about: string;
@@ -19,11 +20,6 @@ const ResultsPage: React.FC = () => {
   const searchterm = searchParams?.get('searchterm');
   const [searchTerm, setSearchTerm] = useState('' + searchterm);
   const [results, setResults] = useState<SearchResult[]>([]);
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}`);
-  };
 
   useEffect(() => {
     if (searchterm) {
@@ -44,7 +40,7 @@ const ResultsPage: React.FC = () => {
         {/* Results */}
         <ul className="space-y-6">
           {results.map((result) => (
-            <li key={result.id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200">
+            <li key={result._id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200">
               <h2 className="text-lg font-semibold text-blue-600 hover:underline">
                 <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
               </h2>

@@ -1,4 +1,4 @@
-// context/SearchContext.tsx
+// src/context/SearchContext.tsx
 
 'use client';
 
