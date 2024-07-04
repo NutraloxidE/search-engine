@@ -11,14 +11,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await axios.get(`https://${url}/favicon.ico`);
+    //get the favicon.ico from the root of the domain
+    const response = await axios.get(`${url}/favicon.ico`, {
+      responseType: 'arraybuffer',
+    });
 
-    if (response.status === 200) {
-      res.status(200).json({ favicon: `https://${url}/favicon.ico` });
-    } else {
-      res.status(404).json({ error: 'Favicon not found' });
-    }
-  } catch (error: any) {
-    res.status(500).json({ error: `Failed to get favicon: ${error.message}` });
+    //send the response with the favicon url with json format
+    res.status(200).json({
+      url: `${url}/favicon.ico`,
+      favicon: `data:image/png;base64,${Buffer.from(response.data, 'binary').toString('base64')}`,
+    });
+
+  } catch (error:any) {
+
+    //send response with the error message with json format 
+    res.status(500).json({ error: error.message });
+    
   }
+
 }
