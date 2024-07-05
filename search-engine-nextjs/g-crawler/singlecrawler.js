@@ -5,6 +5,7 @@ const Data = require('../src/utils/Data').default;
 const mongoose = require('mongoose');
 const connectDB = require('../src/utils/db.js');
 const puppeteer = require('puppeteer');
+const getFaviconLib = require('../src/utils/getFaviconLib.js');
 
 // Connect to the database
 connectDB();
@@ -73,6 +74,9 @@ class Crawler {
         }
       }
 
+      //get favicon
+      const favicon = await getFaviconLib.getFaviconTryAllAsBase64(url);
+
       // Close the browser
       await browser.close();
 
@@ -86,6 +90,7 @@ class Crawler {
         existingData.textSnippet = data.textSnippet;
         existingData.relatedUrls = relatedUrls; // Update related URLs
         existingData.fetchedAt = new Date();
+        existingData.favicon = favicon;
         await existingData.save();
         console.log('Existing document updated:', existingData);
       } else {

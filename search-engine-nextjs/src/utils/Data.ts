@@ -8,6 +8,7 @@ interface IData extends Document {
   textSnippet: string;
   fetchedAt: Date;
   relatedUrls: string[]; // 追加したフィールド
+  favicon: string; // 追加したフィールド
 }
 
 const DataSchema: Schema = new Schema({
@@ -17,7 +18,8 @@ const DataSchema: Schema = new Schema({
   about: { type: String, required: true },
   textSnippet: { type: String, required: true },
   fetchedAt: { type: Date, default: Date.now },
-  relatedUrls: { type: [String], default: [] } // 追加したフィールド
+  relatedUrls: { type: [String], default: [] }, // 追加したフィールド
+  favicon: { type: String, default: '' } // 追加したフィールド
 });
 
 export default mongoose.models.Data || mongoose.model<IData>('Data', DataSchema);
