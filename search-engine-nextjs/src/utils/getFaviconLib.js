@@ -1,5 +1,4 @@
 "use strict";
-//getFaviconLib.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,8 +38,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resizeImage = resizeImage;
 exports.toBase64 = toBase64;
-exports.getFaviconAsBase64 = getFaviconAsBase64;
+exports.getFaviconFromHtml = getFaviconFromHtml;
 exports.getFaviconAltAsBase64 = getFaviconAltAsBase64;
+exports.getFaviconAsBase64 = getFaviconAsBase64;
 exports.getFaviconTryAllAsBase64 = getFaviconTryAllAsBase64;
 var axios_1 = require("axios");
 var cheerio_1 = require("cheerio");
@@ -60,21 +60,17 @@ function resizeImage(buffer) {
         });
     });
 }
-// BufferからBase64に変換する関数
 function toBase64(buffer) {
     return buffer.toString('base64');
 }
-// faviconを取得し、Base64形式に変換する関数
-function getFaviconAsBase64(url) {
+function fetchAndResizeFavicon(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var response, resizedBuffer, error_1, response, $, faviconUrl, faviconResponse, resizedBuffer, error_2;
+        var response, resizedBuffer, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 3, , 11]);
-                    return [4 /*yield*/, axios_1.default.get("".concat(url, "/favicon.ico"), {
-                            responseType: 'arraybuffer',
-                        })];
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, axios_1.default.get(url, { responseType: 'arraybuffer' })];
                 case 1:
                     response = _a.sent();
                     return [4 /*yield*/, resizeImage(Buffer.from(response.data, 'binary'))];
@@ -83,66 +79,92 @@ function getFaviconAsBase64(url) {
                     return [2 /*return*/, "data:image/png;base64,".concat(toBase64(resizedBuffer))];
                 case 3:
                     error_1 = _a.sent();
-                    _a.label = 4;
-                case 4:
-                    _a.trys.push([4, 9, , 10]);
-                    return [4 /*yield*/, axios_1.default.get(url)];
-                case 5:
-                    response = _a.sent();
-                    $ = cheerio_1.default.load(response.data);
-                    faviconUrl = $('link[rel="icon"], link[rel="shortcut icon"]').attr('href');
-                    if (!faviconUrl) return [3 /*break*/, 8];
-                    return [4 /*yield*/, axios_1.default.get(faviconUrl, {
-                            responseType: 'arraybuffer',
-                        })];
-                case 6:
-                    faviconResponse = _a.sent();
-                    return [4 /*yield*/, resizeImage(Buffer.from(faviconResponse.data, 'binary'))];
-                case 7:
-                    resizedBuffer = _a.sent();
-                    return [2 /*return*/, "data:image/png;base64,".concat(toBase64(resizedBuffer))];
-                case 8: return [3 /*break*/, 10];
-                case 9:
-                    error_2 = _a.sent();
+                    console.error('Error fetching favicon:', error_1);
                     return [2 /*return*/, null];
-                case 10: return [3 /*break*/, 11];
-                case 11: return [2 /*return*/, null];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+function getFaviconFromHtml(url, html) {
+    return __awaiter(this, void 0, void 0, function () {
+        var $, selectors, _i, selectors_1, selector, faviconUrl, favicon;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    $ = cheerio_1.default.load(html);
+                    selectors = [
+                        'link[rel="icon"]',
+                        'link[rel="shortcut icon"]',
+                        'link[rel="apple-touch-icon"]',
+                        'link[rel="apple-touch-icon-precomposed"]',
+                        'meta[property="og:image"]'
+                    ];
+                    _i = 0, selectors_1 = selectors;
+                    _a.label = 1;
+                case 1:
+                    if (!(_i < selectors_1.length)) return [3 /*break*/, 4];
+                    selector = selectors_1[_i];
+                    faviconUrl = $(selector).attr('href') || $(selector).attr('content');
+                    if (!faviconUrl) return [3 /*break*/, 3];
+                    if (!faviconUrl.startsWith('http')) {
+                        faviconUrl = new URL(faviconUrl, url).href;
+                    }
+                    return [4 /*yield*/, fetchAndResizeFavicon(faviconUrl)];
+                case 2:
+                    favicon = _a.sent();
+                    if (favicon) {
+                        return [2 /*return*/, favicon];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/, null];
             }
         });
     });
 }
 function getFaviconAltAsBase64(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var response, $, faviconUrl, faviconResponse, resizedBuffer, error_3;
+        var response, error_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 5, , 6]);
+                    _a.trys.push([0, 3, , 4]);
                     return [4 /*yield*/, axios_1.default.get(url)];
                 case 1:
                     response = _a.sent();
-                    $ = cheerio_1.default.load(response.data);
-                    faviconUrl = $('link[rel="icon"]').attr('href') || $('meta[property="og:image"]').attr('content');
-                    // If the favicon URL is not absolute, make it absolute
-                    if (faviconUrl && !faviconUrl.startsWith('http')) {
-                        faviconUrl = new URL(faviconUrl, url).href;
-                    }
-                    if (!faviconUrl) return [3 /*break*/, 4];
-                    return [4 /*yield*/, axios_1.default.get(faviconUrl, {
-                            responseType: 'arraybuffer',
-                        })];
-                case 2:
-                    faviconResponse = _a.sent();
-                    return [4 /*yield*/, resizeImage(Buffer.from(faviconResponse.data, 'binary'))];
+                    return [4 /*yield*/, getFaviconFromHtml(url, response.data)];
+                case 2: return [2 /*return*/, _a.sent()];
                 case 3:
-                    resizedBuffer = _a.sent();
-                    return [2 /*return*/, "data:image/png;base64,".concat(toBase64(resizedBuffer))];
-                case 4: return [3 /*break*/, 6];
-                case 5:
+                    error_2 = _a.sent();
+                    console.error('Error fetching HTML for favicon:', error_2);
+                    return [2 /*return*/, null];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+function getFaviconAsBase64(url) {
+    return __awaiter(this, void 0, void 0, function () {
+        var favicon, error_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, fetchAndResizeFavicon("".concat(url, "/favicon.ico"))];
+                case 1:
+                    favicon = _a.sent();
+                    if (favicon) {
+                        return [2 /*return*/, favicon];
+                    }
+                    return [3 /*break*/, 3];
+                case 2:
                     error_3 = _a.sent();
-                    console.error(error_3);
-                    return [3 /*break*/, 6];
-                case 6: return [2 /*return*/, null];
+                    console.error('Error fetching favicon.ico:', error_3);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/, getFaviconAltAsBase64(url)];
             }
         });
     });

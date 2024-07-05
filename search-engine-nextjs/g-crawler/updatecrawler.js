@@ -17,6 +17,9 @@ async function updateData(url, expandDB) {
     return;
   }
 
+  // Start time for measuring the duration
+  const startTime = Date.now();
+
   // Crawl the page and update the database
   const urls = await crawler.crawlPage(url);
 
@@ -27,6 +30,11 @@ async function updateData(url, expandDB) {
       await crawlerForLoop.crawlPage(urls[i]);
     }
   }
+
+  // End time and duration calculation
+  const endTime = Date.now();
+  const duration = (endTime - startTime) / 1000; // duration in seconds
+  console.log(`Updated ${url} in ${duration} seconds.`);
 }
 
 async function updateAllData(expandDB) {
