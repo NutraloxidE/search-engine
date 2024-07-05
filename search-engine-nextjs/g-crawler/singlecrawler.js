@@ -77,6 +77,13 @@ class Crawler {
       //get favicon
       const favicon = await getFaviconLib.getFaviconTryAllAsBase64(url);
 
+      //check if favicon is successfully fetched
+      if (!favicon) {
+        console.log('Favicon not found');
+      } else { 
+        console.log('Favicon found');
+      }
+
       // Close the browser
       await browser.close();
 
@@ -102,7 +109,8 @@ class Crawler {
           about: data.metaDescription,
           textSnippet: data.textSnippet,
           relatedUrls: relatedUrls, // Save related URLs
-          fetchedAt: new Date()
+          fetchedAt: new Date(),
+          favicon: favicon
         });
         console.log('New document created:', newData);
       }

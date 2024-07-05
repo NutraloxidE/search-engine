@@ -4,19 +4,19 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import * as Jimp from 'jimp';
 
-async function resizeImage(buffer: Buffer): Promise<Buffer> {
+export async function resizeImage(buffer: Buffer): Promise<Buffer> {
   const image = await Jimp.read(buffer);
   image.resize(32, 32);
   return await image.getBufferAsync(Jimp.MIME_PNG);
 }
 
 // BufferからBase64に変換する関数
-function toBase64(buffer: Buffer): string {
+export function toBase64(buffer: Buffer): string {
   return buffer.toString('base64');
 }
 
 // faviconを取得し、Base64形式に変換する関数
-async function getFaviconAsBase64(url: string): Promise<string | null> {
+export async function getFaviconAsBase64(url: string): Promise<string | null> {
   try {
     const response = await axios.get(`${url}/favicon.ico`, {
       responseType: 'arraybuffer',
@@ -42,7 +42,7 @@ async function getFaviconAsBase64(url: string): Promise<string | null> {
   return null;
 }
 
-async function getFaviconAltAsBase64(url: string): Promise<string | null> {
+export async function getFaviconAltAsBase64(url: string): Promise<string | null> {
   try {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
@@ -66,7 +66,7 @@ async function getFaviconAltAsBase64(url: string): Promise<string | null> {
   return null;
 }
 
-async function getFaviconTryAllAsBase64(url: string): Promise<string | null> {
+export async function getFaviconTryAllAsBase64(url: string): Promise<string | null> {
   const favicon = await getFaviconAsBase64(url);
   if (favicon) {
     return favicon;

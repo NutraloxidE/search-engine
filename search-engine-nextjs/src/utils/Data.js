@@ -8,6 +8,7 @@ var DataSchema = new mongoose_1.Schema({
     about: { type: String, required: true },
     textSnippet: { type: String, required: true },
     fetchedAt: { type: Date, default: Date.now },
-    relatedUrls: { type: [String], default: [] } // 追加したフィールド
+    relatedUrls: { type: [String], default: [] }, // 追加したフィールド
+    favicon: { type: String, default: '' } // 追加したフィールド
 });
 exports.default = mongoose_1.default.models.Data || mongoose_1.default.model('Data', DataSchema);

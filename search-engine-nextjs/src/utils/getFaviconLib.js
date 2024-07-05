@@ -37,6 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resizeImage = resizeImage;
+exports.toBase64 = toBase64;
+exports.getFaviconAsBase64 = getFaviconAsBase64;
+exports.getFaviconAltAsBase64 = getFaviconAltAsBase64;
+exports.getFaviconTryAllAsBase64 = getFaviconTryAllAsBase64;
 var axios_1 = require("axios");
 var cheerio_1 = require("cheerio");
 var Jimp = require("jimp");
