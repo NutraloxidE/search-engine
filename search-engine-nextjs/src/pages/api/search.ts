@@ -96,7 +96,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
 
     // Pagination
     const totalResults = uniqueResults.length;
-    const paginatedResults = uniqueResults.slice((pageInt - 1) * limitInt, pageInt * limitInt);
+    const paginatedResults = await Data.find(orQuery).skip((pageInt - 1) * limitInt).limit(limitInt);
 
     // Return the results
     res.status(200).json({ totalResults, results: paginatedResults });
