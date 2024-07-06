@@ -15,7 +15,7 @@ const SearchContext = createContext<SearchContextProps | undefined>(undefined);
 
 export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSearchComplete, setIsSearchComplete] = useState(false);
+  const [isSearchComplete, setIsSearchComplete] = useState(true);
 
   return (
     <SearchContext.Provider value={{ searchTerm, setSearchTerm, isSearchComplete, setIsSearchComplete }}>

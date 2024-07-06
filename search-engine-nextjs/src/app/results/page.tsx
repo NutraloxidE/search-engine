@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import SearchBar from '../../components/SearchBar'; 
+import { useSearch } from '../../app/context/SearchContext';
 
 type SearchResult = {
   _id: string;
@@ -25,21 +26,40 @@ const ResultsPage: React.FC = () => {
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const limit = 15;
 
+  const { isSearchComplete, setIsSearchComplete } = useSearch(); 
+
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+
     if (searchterm) {
-      console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
-      fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('API response:', data);
-          setResults(data.results || []);
-          setTotalResults(data.totalResults || 0);
-        })
-        .catch((error) => {
-          console.error('Error fetching search results:', error);
-        });
+      timeoutId = setTimeout(() => {
+
+        setIsSearchComplete(false);
+        console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
+        fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('API response:', data);
+            setResults(data.results || []);
+            setTotalResults(data.totalResults || 0);
+            setIsSearchComplete(true);
+          })
+          .catch((error) => {
+            console.error('Error fetching search results:', error);
+          });
+      }, 1500);
+    } else {
+      setIsSearchComplete(true);
     }
-  }, [searchterm, page]);
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        
+      }
+    };
+    
+  }, [searchterm, page, setIsSearchComplete]);
 
   useEffect(() => {
     // 検索ワードが変更されたときにページを1にリセット
@@ -47,6 +67,10 @@ const ResultsPage: React.FC = () => {
   }, [searchterm]);
 
   const handlePageChange = (newPage: number) => {
+    //turn on loading spinner
+    setIsSearchComplete(false);
+
+    // Update the page state
     setPage(newPage);
     window.scrollTo(0, 0);
 

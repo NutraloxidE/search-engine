@@ -5,6 +5,7 @@
 import React, { FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearch } from '../app/context/SearchContext';
+import { FaSpinner, FaCheck } from 'react-icons/fa'; 
 
 export default function SearchBar() {
   const { searchTerm, setSearchTerm, setIsSearchComplete, isSearchComplete } = useSearch();
@@ -19,9 +20,20 @@ export default function SearchBar() {
   }, [setSearchTerm]);
 
   const handleSubmit = (event: FormEvent) => {
+    console.log('Enterkey or Search button clicked');
     event.preventDefault();
     setIsSearchComplete(false); // 検索の開始時に完了フラグをリセット
-    router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}`);
+
+    //if search term is same as previous search term, set isSearchComplete to true
+    const searchParams = new URLSearchParams(window.location.search);
+    const previousSearchTerm = searchParams.get('searchterm');
+    if (searchTerm === previousSearchTerm) {
+      setIsSearchComplete(true);
+      return;
+    }
+
+    const timestamp = Date.now(); // <-- get the current timestamp
+    router.push(`/results?searchterm=${encodeURIComponent(searchTerm)}&timestamp=${timestamp}`); // <-- add the timestamp to the URL
   };
 
   return (
@@ -40,6 +52,13 @@ export default function SearchBar() {
         >
           Search
         </button>
+
+        {!isSearchComplete ? (
+          <FaSpinner className="animate-spin ml-3" /> // <-- show a spinning icon while searching
+        ) : (
+          <FaCheck className="ml-3" /> // <-- show a checkmark when the search is complete
+        )}
+
       </div>
     </form>
   );
