@@ -18,8 +18,6 @@ export default function SearchBar() {
     }
   }, [setSearchTerm]);
 
-  
-
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     setIsSearchComplete(false); // 検索の開始時に完了フラグをリセット

@@ -18,40 +18,28 @@ const ResultsPage: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchterm = searchParams?.get('searchterm');
-  const [searchTerm, setSearchTerm] = useState('' + searchterm);
+  const pageParam = searchParams?.get('page');
+  const [searchTerm, setSearchTerm] = useState(searchterm || '');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [totalResults, setTotalResults] = useState(0);
-  const pageParam = searchParams?.get('page');
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const limit = 15;
 
   useEffect(() => {
-    //初回で2回リクエストされないための応急処置
-    let timeoutId: NodeJS.Timeout | null = null;
-
     if (searchterm) {
-      timeoutId = setTimeout(() => {
-        console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
-        fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log('API response:', data);
-            setResults(data.results || []);
-            setTotalResults(data.totalResults || 0);
-          })
-          .catch((error) => {
-            console.error('Error fetching search results:', error);
-          });
-      }, 1500);
+      console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
+      fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('API response:', data);
+          setResults(data.results || []);
+          setTotalResults(data.totalResults || 0);
+        })
+        .catch((error) => {
+          console.error('Error fetching search results:', error);
+        });
     }
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-
-  }, [page]);
+  }, [searchterm, page]);
 
   useEffect(() => {
     // 検索ワードが変更されたときにページを1にリセット
@@ -59,8 +47,6 @@ const ResultsPage: React.FC = () => {
   }, [searchterm]);
 
   const handlePageChange = (newPage: number) => {
-
-    //reset to top of page
     setPage(newPage);
     window.scrollTo(0, 0);
 
