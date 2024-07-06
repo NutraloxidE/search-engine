@@ -143,7 +143,12 @@ const ResultsPage: React.FC = () => {
               </li>
             ))
           ) : (
-            <p>No results found.</p>
+            //if isSearchComplete is false, show loading tex instead of no results found
+            isSearchComplete ? (
+              <p>No results found.</p>
+            ) : (
+              <p>Loading...</p>
+            )
           )}
         </ul>
 
