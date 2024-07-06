@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SearchBar from '../../components/SearchBar'; 
 import { useSearch } from '../../app/context/SearchContext';
 
@@ -36,7 +35,6 @@ const ResultsPage: React.FC = () => {
       const startTime = Date.now();
 
       timeoutId = setTimeout(() => {
-
         setIsSearchComplete(false);
         console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
         fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
@@ -61,10 +59,8 @@ const ResultsPage: React.FC = () => {
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
-        
       }
     };
-    
   }, [searchterm, page, setIsSearchComplete]);
 
   useEffect(() => {
@@ -88,11 +84,9 @@ const ResultsPage: React.FC = () => {
 
   return (
     <>
+      <SearchBar />
       <Suspense fallback={<div>Loading...</div>}>
         <div className="flex flex-col items-center justify-start min-h-screen bg-transparent mb-0" style={{ transform: 'translateY(vh0)', marginTop: '20px' }}>
-          {/* Search Form */}
-          <SearchBar />
-
           <p className="text-sm text-gray-500 text-left">Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)</p>
 
           {/* Results */}
