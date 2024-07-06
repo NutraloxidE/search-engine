@@ -148,9 +148,9 @@ const ResultsPage: React.FC = () => {
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
-            className="mr-2 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            className="mr-1 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
           >
-            Previous
+            ←
           </button>
           <div className="flex space-x-2 overflow-x-auto">
             {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) => 
@@ -169,13 +169,13 @@ const ResultsPage: React.FC = () => {
               )
             )}
           </div>
-          <span className="ml-2 mr-2" >{`Showing ${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults} results`}</span>
+          <span className="ml-2 mr-2" >{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page * limit >= totalResults}
-            className="ml-2 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            className="ml-1 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
           >
-            Next
+            →
           </button>
         </div>
 
