@@ -5,6 +5,9 @@ import Data from '../../utils/Data';
 import * as kuromoji from 'kuromoji';
 const path = require('path');
 import { stopWords } from '../../utils/search-stopword';
+import NodeCache from 'node-cache';
+
+const myCache = new NodeCache();
 
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm, limit = 15, page = 1 } = req.query;
@@ -14,6 +17,15 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     await connectDB();
 
     console.log("Search term:", req.query.searchterm);
+
+    // Check if the results are in the cache
+    const cachedResults = myCache.get(searchterm as string) as any[];
+    if (cachedResults) {
+        const paginatedResults = cachedResults.slice((pageInt - 1) * limitInt, pageInt * limitInt);
+        return res.status(200).json({ totalResults: cachedResults.length, results: paginatedResults });
+    }
+
+    // If the results are not in the cache, continue with the search
 
     // Split the search term by space for OR search
     const orTerms = (searchterm as string).split(' ');
@@ -46,6 +58,10 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
 
     console.log("After Filtered");
     console.log(SeparatedPerWords);    
+
+    /**
+     * From here, the search query is created.
+     */
 
     // Create the query for OR terms
     const orQuery = {
@@ -95,9 +111,8 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     });
 
     // Pagination
-    const totalResults = uniqueResults.length;
-    const paginatedResults = await Data.find(orQuery).skip((pageInt - 1) * limitInt).limit(limitInt);
-
-    // Return the results
-    res.status(200).json({ totalResults, results: paginatedResults });
+    // Cache the results with a TTL (Time to Live) of 1 hour (3600 seconds)
+    myCache.set(searchterm as string, uniqueResults, 3600);
+    const paginatedResults = uniqueResults.slice((pageInt - 1) * limitInt, pageInt * limitInt);
+    res.status(200).json({ totalResults: uniqueResults.length, results: paginatedResults });
 }

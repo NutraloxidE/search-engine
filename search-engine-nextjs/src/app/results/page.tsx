@@ -27,11 +27,14 @@ const ResultsPage: React.FC = () => {
   const limit = 15;
 
   const { isSearchComplete, setIsSearchComplete } = useSearch(); 
+  const [searchTime, setSearchTime] = useState(0);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
 
     if (searchterm) {
+      const startTime = Date.now();
+
       timeoutId = setTimeout(() => {
 
         setIsSearchComplete(false);
@@ -43,6 +46,9 @@ const ResultsPage: React.FC = () => {
             setResults(data.results || []);
             setTotalResults(data.totalResults || 0);
             setIsSearchComplete(true);
+
+            const endTime = Date.now(); // Record the end time
+            setSearchTime((endTime - startTime) / 1000); // Calculate the search time in seconds
           })
           .catch((error) => {
             console.error('Error fetching search results:', error);
@@ -86,7 +92,7 @@ const ResultsPage: React.FC = () => {
         {/* Search Form */}
         <SearchBar />
 
-        <p className="text-sm text-gray-500 text-left">Search Results for &quot;{searchterm}&quot; ({totalResults} results)</p>
+        <p className="text-sm text-gray-500 text-left">Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)</p>
 
         {/* Results */}
         <ul className="space-y-6">
