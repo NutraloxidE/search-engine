@@ -76,6 +76,10 @@ const ResultsPage: React.FC = () => {
     //turn on loading spinner
     setIsSearchComplete(false);
 
+    //clear the results and update the page
+    setResults([]);
+    setTotalResults(0);
+
     // Update the page state
     setPage(newPage);
     window.scrollTo(0, 0);

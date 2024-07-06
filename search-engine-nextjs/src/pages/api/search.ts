@@ -9,10 +9,17 @@ import NodeCache from 'node-cache';
 
 const myCache = new NodeCache();
 
+// Connect to MongoDB and ensure the indexes are created
+async function ensureIndexes() {
+    await connectDB();
+    // Ensure indexes are created on the relevant fields
+    await Data.collection.createIndex({ title: "text", about: "text", textSnippet: "text", url: "text" });
+}
+
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm, limit = 15, page = 1 } = req.query;
     const limitInt = parseInt(limit as string);
-    const pageInt = parseInt(page as string);
+    const pageInt = parseInt(page as string);   
 
     console.log("Search term:", req.query.searchterm);
 
@@ -24,7 +31,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         return res.status(200).json({ totalResults: cachedResults.length, results: paginatedResults });
     }
 
-    await connectDB();
+    await ensureIndexes();
 
     // If the results are not in the cache, continue with the search
 
@@ -39,7 +46,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     const builder = kuromoji.builder({ dicPath: dicPath });
 
     await new Promise<void>((resolve, reject) => {
-        builder.build((err:any, tokenizer:any) => {
+        builder.build((err: any, tokenizer: any) => {
             if (err) {
                 reject(err);
                 return;
@@ -47,7 +54,7 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     
             // req.query.searchtermを単語に分割します。
             const path = tokenizer.tokenize(req.query.searchterm);
-            SeparatedPerWords = path.map((token:any) => token.surface_form);
+            SeparatedPerWords = path.map((token: any) => token.surface_form);
     
             console.log(SeparatedPerWords);
             resolve();
@@ -68,10 +75,10 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     const orQuery = {
         $or: orTerms.map(term => ({
             $or: [
-                { title: { $regex: new RegExp(term, 'i') } },
-                { about: { $regex: new RegExp(term, 'i') } },
+                //{ title: { $regex: new RegExp(term, 'i') } },
+                //{ about: { $regex: new RegExp(term, 'i') } },
                 { textSnippet: { $regex: new RegExp(term, 'i') } },
-                { url: { $regex: new RegExp(term, 'i') } }
+                //{ url: { $regex: new RegExp(term, 'i') } }
             ]
         }))
     };
@@ -81,15 +88,16 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         $or: SeparatedPerWords.map(term => ({
             $or: [
                 { title: { $regex: new RegExp(term, 'i') } },
-                { about: { $regex: new RegExp(term, 'i') } },
-                { textSnippet: { $regex: new RegExp(term, 'i') } },
-                { url: { $regex: new RegExp(term, 'i') } }
+                //{ about: { $regex: new RegExp(term, 'i') } },
+                //{ textSnippet: { $regex: new RegExp(term, 'i') } },
+                //{ url: { $regex: new RegExp(term, 'i') } }
             ]
         }))
     };
 
-    const orResults = await Data.find(orQuery);
-    const separatedResults = await Data.find(SeparatedPerWordsQuery);
+    // 
+    const orResults = await Data.find(orQuery, { title: 1, about: 1, textSnippet: 1, url: 1 });
+    const separatedResults = await Data.find(SeparatedPerWordsQuery, { title: 1, about: 1, textSnippet: 1, url: 1 });
 
     // Combine the results
     const combinedResults = [...orResults, ...separatedResults];
