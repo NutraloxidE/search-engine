@@ -6,9 +6,10 @@ import * as kuromoji from 'kuromoji';
 const path = require('path');
 import { stopWords } from '../../utils/search-stopword';
 
-
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
-    const { searchterm } = req.query;
+    const { searchterm, limit = 15, page = 1 } = req.query;
+    const limitInt = parseInt(limit as string);
+    const pageInt = parseInt(page as string);
 
     await connectDB();
 
@@ -70,7 +71,6 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         }))
     };
 
-    // Search the database for the search term
     const orResults = await Data.find(orQuery);
     const separatedResults = await Data.find(SeparatedPerWordsQuery);
 
@@ -94,6 +94,10 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
         return bScore - aScore;
     });
 
+    // Pagination
+    const totalResults = uniqueResults.length;
+    const paginatedResults = uniqueResults.slice((pageInt - 1) * limitInt, pageInt * limitInt);
+
     // Return the results
-    res.status(200).json(uniqueResults);
+    res.status(200).json({ totalResults, results: paginatedResults });
 }
