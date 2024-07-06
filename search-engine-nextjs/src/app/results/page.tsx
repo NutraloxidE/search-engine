@@ -46,8 +46,17 @@ const ResultsPage: React.FC = () => {
   }, [searchterm]);
 
   const handlePageChange = (newPage: number) => {
+
+    //reset to page 1 if they search again
     setPage(newPage);
     window.scrollTo(0, 0);
+
+    // Update the URL
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', newPage.toString());
+    router.push(`${window.location.pathname}?${params.toString()}`);
+    window.scrollTo(0, 0);
+
   };
 
   return (
