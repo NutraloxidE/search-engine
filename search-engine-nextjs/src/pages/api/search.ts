@@ -14,16 +14,17 @@ export default async function handler (req: NextApiRequest, res: NextApiResponse
     const limitInt = parseInt(limit as string);
     const pageInt = parseInt(page as string);
 
-    await connectDB();
-
     console.log("Search term:", req.query.searchterm);
 
     // Check if the results are in the cache
     const cachedResults = myCache.get(searchterm as string) as any[];
     if (cachedResults) {
+        console.log("Results are in the cache");
         const paginatedResults = cachedResults.slice((pageInt - 1) * limitInt, pageInt * limitInt);
         return res.status(200).json({ totalResults: cachedResults.length, results: paginatedResults });
     }
+
+    await connectDB();
 
     // If the results are not in the cache, continue with the search
 

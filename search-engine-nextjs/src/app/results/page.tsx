@@ -98,7 +98,7 @@ const ResultsPage: React.FC = () => {
         <ul className="space-y-6">
           {results.length > 0 ? (
             results.map((result) => (
-              <li key={result._id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200">
+              <li key={result._id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200"> 
                 <h2 className="text-lg font-semibold text-blue-600 hover:underline">
                   <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
                 </h2>
