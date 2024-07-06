@@ -21,24 +21,37 @@ const ResultsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('' + searchterm);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [totalResults, setTotalResults] = useState(0);
-  const [page, setPage] = useState(1);
+  const pageParam = searchParams?.get('page');
+  const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const limit = 15;
 
   useEffect(() => {
+    //初回で2回リクエストされないための応急処置
+    let timeoutId: NodeJS.Timeout | null = null;
+
     if (searchterm) {
-      console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
-      fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('API response:', data);
-          setResults(data.results || []);
-          setTotalResults(data.totalResults || 0);
-        })
-        .catch((error) => {
-          console.error('Error fetching search results:', error);
-        });
+      timeoutId = setTimeout(() => {
+        console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
+        fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('API response:', data);
+            setResults(data.results || []);
+            setTotalResults(data.totalResults || 0);
+          })
+          .catch((error) => {
+            console.error('Error fetching search results:', error);
+          });
+      }, 1500);
     }
-  }, [searchterm, page]);
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+
+  }, [page]);
 
   useEffect(() => {
     // 検索ワードが変更されたときにページを1にリセット
@@ -47,7 +60,7 @@ const ResultsPage: React.FC = () => {
 
   const handlePageChange = (newPage: number) => {
 
-    //reset to page 1 if they search again
+    //reset to top of page
     setPage(newPage);
     window.scrollTo(0, 0);
 
@@ -55,8 +68,6 @@ const ResultsPage: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     params.set('page', newPage.toString());
     router.push(`${window.location.pathname}?${params.toString()}`);
-    window.scrollTo(0, 0);
-
   };
 
   return (
