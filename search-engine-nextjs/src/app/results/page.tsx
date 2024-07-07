@@ -25,9 +25,24 @@ const ResultsPage: React.FC = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1);
   const limit = 15;
+  const [favicons, setFavicons] = useState<{ [id: string]: string }>({});
 
   const { isSearchComplete, setIsSearchComplete } = useSearch(); 
   const [searchTime, setSearchTime] = useState(0);
+
+  //favicon fetch
+  useEffect(() => {
+    results.forEach((result) => {
+      fetch(`/api/loadFaviconFromDB?id=${result._id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setFavicons((prevFavicons) => ({ ...prevFavicons, [result._id]: data.favicon }));
+        })
+        .catch((error) => {
+          console.error('Error fetching favicon:', error);
+        });
+    });
+  }, [results]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
@@ -134,9 +149,16 @@ const ResultsPage: React.FC = () => {
           {results.length > 0 ? (
             results.map((result) => (
               <li key={result._id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200"> 
-                <h2 className="text-lg font-semibold text-blue-600 hover:underline">
-                  <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
-                </h2>
+                
+                {/* title and favicon */}
+                <div className="flex items-center">
+                  {favicons[result._id]?.startsWith('data:image/png;base64,') && 
+                    <img src={favicons[result._id]} alt="favicon" className="mr-2 rounded-full border-2 border-black border-opacity-20" />}
+                  <h2 className="text-lg font-semibold text-blue-600 hover:underline">
+                    <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
+                  </h2>
+                </div>
+
                 <p className="text-gray-600">{result.about.length > 100 ? result.about.substring(0, 100) + '...' : result.about}</p>
                 <p className="text-gray-800">{result.textSnippet.length > 100 ? result.textSnippet.substring(0, 100) + '...' : result.textSnippet}</p>
                 <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Read more</a>
