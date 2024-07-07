@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 import connectDB from '../../utils/db';
 import Data from '../../utils/Data';
+import SearchHistory from '../../utils/DataSearchHistory';
 import * as kuromoji from 'kuromoji';
 const path = require('path');
 import { stopWords } from '../../utils/search-stopword';
@@ -16,12 +17,26 @@ async function ensureIndexes() {
     await Data.collection.createIndex({ title: "text", about: "text", textSnippet: "text", url: "text" });
 }
 
+async function addSearchHistory(ip: string, searchTerm: string) {
+    await connectDB();
+    const searchHistory = new SearchHistory({ ip, searchTerm });
+    await searchHistory.save();
+    console.log("Search history added to the database");
+}
+
 export default async function handler (req: NextApiRequest, res: NextApiResponse) {
     const { searchterm, limit = 15, page = 1 } = req.query;
     const limitInt = parseInt(limit as string);
     const pageInt = parseInt(page as string);   
 
     console.log("Search term:", req.query.searchterm);
+
+    // Add the search history to the database
+    let ip = req.headers['x-real-ip'] as string;
+    if (!ip) {
+        ip = req.connection.remoteAddress as string;
+    }
+    addSearchHistory(ip, searchterm as string);
 
     // Check if the results are in the cache
     const cachedResults = myCache.get(searchterm as string) as any[];
