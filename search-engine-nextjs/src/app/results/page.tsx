@@ -108,17 +108,15 @@ const ResultsPage: React.FC = () => {
   const generatePageNumbers = (totalPages: number, currentPage: number) => {
     const delta = 2;
     const range: (number | string)[] = [];
-    const rangeWithDots: (number | string)[] = [];
     let l: number | null = null;
-
-    range.push(1);
-    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
-      if (i < totalPages && i > 1) {
+  
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || i >= currentPage - delta && i <= currentPage + delta) {
         range.push(i);
       }
     }
-    range.push(totalPages);
-    
+  
+    const rangeWithDots: (number | string)[] = [];
     for (let i of range) {
       let numI = Number(i);
       let numL = Number(l);
@@ -132,7 +130,7 @@ const ResultsPage: React.FC = () => {
       rangeWithDots.push(numI);
       l = numI;
     }
-
+  
     return rangeWithDots;
   };
 
