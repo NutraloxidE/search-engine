@@ -4,17 +4,8 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 214, 219, 220;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 18, 18, 18; /* ダークモード用の背景色 */
-    --background-end-rgb: 18, 18, 18; /* ダークモード用の背景色 */
-    --text-color-rgb: 255, 255, 255; /* ダークモード用のテキスト色 */
-  }
+  --background-start-rgb: 214,255,252;
+  --background-end-rgb: 255,219,250;
 }
 
 body {
@@ -25,6 +16,21 @@ body {
       rgb(var(--background-end-rgb))
     ),
     rgb(var(--background-start-rgb));
+}
+
+/* Form input fields style */
+input, textarea, select {
+  background-color: rgb(var(--background-start-rgb));
+  color: rgb(var(--foreground-rgb));
+  border: 1px solid rgb(var(--foreground-rgb));
+}
+
+@media (prefers-color-scheme: dark) {
+  input, textarea, select {
+    background-color: rgb(var(--input-background-rgb));
+    color: rgb(var(--text-color-rgb));
+    border: 1px solid rgb(var(--input-border-rgb));
+  }
 }
 
 @layer utilities {

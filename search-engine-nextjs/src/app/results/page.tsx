@@ -111,7 +111,7 @@ const ResultsPage: React.FC = () => {
     let l: number | null = null;
   
     for (let i = 1; i <= totalPages; i++) {
-      if (i === 1 || i === totalPages || i >= currentPage - delta && i <= currentPage + delta) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
         range.push(i);
       }
     }
@@ -146,7 +146,7 @@ const ResultsPage: React.FC = () => {
         <ul className="space-y-6">
           {results.length > 0 ? (
             results.map((result) => (
-              <li key={result._id} className="px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200"> 
+              <li key={result._id} className="ml-2 mr-2 px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200"> 
                 
                 {/* title and favicon */}
                 <div className="flex items-center">
@@ -177,19 +177,19 @@ const ResultsPage: React.FC = () => {
           <button
             onClick={() => handlePageChange(page - 1)}
             disabled={page <= 1}
-            className="mr-1 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+            className="mr-2 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
           >
             ←
           </button>
           <div className="flex space-x-2 overflow-x-auto">
-            {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) => 
+            {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) =>
               pageNum === '...' ? (
-                <span key={index} className="px-2 py-1">
+                <span key={`dots-${index}`} className="px-2 py-1">
                   ...
                 </span>
               ) : (
                 <a
-                  key={pageNum}
+                  key={`page-${pageNum}`}
                   onClick={() => handlePageChange(pageNum as number)}
                   className={`cursor-pointer px-2 py-1 border ${pageNum === page ? 'bg-blue-500 text-white' : 'bg-white text-black'} rounded`}
                 >
@@ -198,7 +198,7 @@ const ResultsPage: React.FC = () => {
               )
             )}
           </div>
-          <span className="ml-2 mr-2" >{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
+          <span className="ml-2 mr-2">{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
           <button
             onClick={() => handlePageChange(page + 1)}
             disabled={page * limit >= totalResults}
