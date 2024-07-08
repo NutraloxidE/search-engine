@@ -76,7 +76,6 @@ const ResultsPage: React.FC = () => {
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
-        
       }
     };
     
@@ -136,81 +135,83 @@ const ResultsPage: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-start min-h-screen bg-transparent mb-0" style={{ transform: 'translateY(vh0)', marginTop: '20px' }}>
-        {/* Search Form */}
-        <SearchBar />
+      {/* Search Form */}
+      <SearchBar />
 
-        <p className="text-sm text-gray-500 text-left">Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)</p>
+      <p className="text-sm text-gray-500 text-left mt-4 mb-4 pl-2 pr-2">Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)</p>
 
-        {/* Results */}
-        <ul className="space-y-6">
-          {results.length > 0 ? (
-            results.map((result) => (
-              <li key={result._id} className="ml-2 mr-2 px-4 py-4 border rounded-md shadow hover:shadow-lg transition-shadow duration-200"> 
-                
-                {/* title and favicon */}
-                <div className="flex items-center">
-                  {favicons[result._id]?.startsWith('data:image/png;base64,') && 
-                    <img src={favicons[result._id]} alt="favicon" className="mr-2 rounded-full border-2 border-black border-opacity-20" />}
-                  <h2 className="text-lg font-semibold text-blue-600 hover:underline">
-                    <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
-                  </h2>
-                </div>
+      {/* Results */}
+      <ul className="space-y-6 w-full max-w-7xl">
+        {results.length > 0 ? (
+          results.map((result) => (
+            <li key={result._id} className="ml-2 mr-2 px-4 py-4 bg-gray-200 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-md shadow-neumorphism hover:shadow-neumorphism-hover transition-shadow duration-200"> 
+              {/* title and favicon */}
+              <div className="flex items-center">
+                {favicons[result._id]?.startsWith('data:image/png;base64,') && 
+                  <img src={favicons[result._id]} alt="favicon" className="mr-2 rounded-md border-2 border-gray-300" />}
+                <h2 className="text-lg font-semibold text-blue-600 hover:underline">
+                  <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
+                </h2>
+              </div>
 
-                <p className="text-gray-600">{result.about.length > 100 ? result.about.substring(0, 100) + '...' : result.about}</p>
-                <p className="text-gray-800">{result.textSnippet.length > 100 ? result.textSnippet.substring(0, 100) + '...' : result.textSnippet}</p>
-                <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Read more</a>
-              </li>
-            ))
+              <p className="text-gray-600 mt-2">{result.about.length > 100 ? result.about.substring(0, 100) + '...' : result.about}</p>
+              <p className="text-gray-800 mt-2">{result.textSnippet.length > 100 ? result.textSnippet.substring(0, 100) + '...' : result.textSnippet}</p>
+              <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mt-2 block">Read more</a>
+            </li>
+          ))
+        ) : (
+          //if isSearchComplete is false, show loading text instead of no results found
+          isSearchComplete ? (
+            <p className="text-gray-500 text-center">No results found.</p>
           ) : (
-            //if isSearchComplete is false, show loading tex instead of no results found
-            isSearchComplete ? (
-              <p>No results found.</p>
-            ) : (
-              <p>Loading...</p>
-            )
-          )}
-        </ul>
+            <p className="text-gray-500 text-center">Loading...</p>
+          )
+        )}
+      </ul>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4 mb-4">
-          <button
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page <= 1}
-            className="mr-2 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-8 mb-8">
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page <= 1}
+          className="mr-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
+        >
+        ←
+        </button>
+      <div className="flex space-x-2 overflow-x-auto">
+      {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) =>
+        pageNum === '...' ? (
+          <span key={`dots-${index}`} className="px-4 py-2 text-gray-500" style={{ minWidth: '36px', textAlign: 'center' }}>
+            ...
+          </span>
+        ) : (
+          <a
+            key={`page-${pageNum}`}
+            onClick={() => handlePageChange(pageNum as number)}
+            className={`cursor-pointer px-4 py-2 border ${pageNum === page ? 'bg-blue-500 text-white shadow-neumorphism-button' : 'bg-gray-200 text-gray-700 shadow-neumorphism-button'} rounded-md`}
+            style={{ minWidth: '36px', textAlign: 'center' }} // 影が適切に表示されるように最小幅を設定
           >
-            ←
-          </button>
-          <div className="flex space-x-2 overflow-x-auto">
-            {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) =>
-              pageNum === '...' ? (
-                <span key={`dots-${index}`} className="px-2 py-1">
-                  ...
-                </span>
-              ) : (
-                <a
-                  key={`page-${pageNum}`}
-                  onClick={() => handlePageChange(pageNum as number)}
-                  className={`cursor-pointer px-2 py-1 border ${pageNum === page ? 'bg-blue-500 text-white' : 'bg-white text-black'} rounded`}
-                >
-                  {pageNum}
-                </a>
-              )
-            )}
-          </div>
-          <span className="ml-2 mr-2">{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
-          <button
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page * limit >= totalResults}
-            className="ml-1 w-18 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-          >
-            →
-          </button>
-        </div>
-
+            {pageNum}
+          </a>
+        )
+      )}
       </div>
+      <span className="ml-2 mr-2 text-gray-700">{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
+      <button
+      onClick={() => handlePageChange(page + 1)}
+      disabled={page * limit >= totalResults}
+      className="ml-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
+      >
+      →
+      </button>
+      </div>
+
+
     </>
   );
+  
+  
+  
 };
 
 export default ResultsPage;

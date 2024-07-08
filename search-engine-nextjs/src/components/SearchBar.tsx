@@ -37,29 +37,28 @@ export default function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg ml-5 mr-5 pl-2 pr-2">
-      <div className="flex items-center border-b border-b-2 border-teal-500 py-2">
+    <form onSubmit={handleSubmit} className="w-full max-w-lg ml-5 mr-5 mt-2 pl-2 pr-2">
+      <div className="flex items-center py-2 shadow-neumorphism rounded-md bg-gray-200">
         <input
           type="text"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
-          className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+          className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
           placeholder="Search..."
         />
         <button
           type="submit"
-          className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+          className="flex-shrink-0 bg-pastel-blue hover:bg-pastel-blue-dark text-sm text-white py-2 px-2 rounded-md shadow-neumorphism-button border-none"
         >
           Search
         </button>
-
         {!isSearchComplete ? (
-          <FaSpinner className="animate-spin ml-3" /> // <-- show a spinning icon while searching
+          <FaSpinner className="animate-spin ml-3 mr-3" /> // <-- show a spinning icon while searching
         ) : (
-          <FaCheck className="ml-3" /> // <-- show a checkmark when the search is complete
+          <FaCheck className="ml-3 mr-3" /> // <-- show a checkmark when the search is complete
         )}
-
       </div>
     </form>
   );
+  
 }
