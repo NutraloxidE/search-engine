@@ -16,6 +16,7 @@ body {
       rgb(var(--background-end-rgb))
     ),
     rgb(var(--background-start-rgb));
+  padding-bottom: 4rem; /* フッターの高さに合わせてパディングを追加 */
 }
 
 /* Form input fields style */

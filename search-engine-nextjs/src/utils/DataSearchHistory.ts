@@ -1,12 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface ISearchHistory extends Document {
+export interface ISearchHistory extends Document {
+  _id: string; 
   ip: string;
   searchTerm: string;
   timestamp: Date;
 }
 
-const SearchHistorySchema: Schema = new Schema({
+export const SearchHistorySchema: Schema = new Schema({
   ip: { type: String, required: true },
   searchTerm: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
