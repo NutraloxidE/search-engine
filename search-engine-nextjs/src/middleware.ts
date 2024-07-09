@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const port = process.env.PORT || 3000;
+
 export async function middleware(request: NextRequest) {
   const { pathname } = new URL(request.url);
 
@@ -15,7 +17,7 @@ export async function middleware(request: NextRequest) {
 
   console.log('IP = ', ip);
 
-  await fetch('http://localhost:3000/api/log', {
+  await fetch(`http://localhost:${port}/api/log`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
