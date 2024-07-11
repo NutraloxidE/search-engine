@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SearchBar from '../../components/SearchBar'; 
 import { useSearch } from '../../app/context/SearchContext';
 
@@ -15,7 +14,7 @@ type SearchResult = {
   url: string;
 };
 
-const ResultsPage: React.FC = () => {
+const ResultsContent: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchterm = searchParams?.get('searchterm');
@@ -30,7 +29,7 @@ const ResultsPage: React.FC = () => {
   const { isSearchComplete, setIsSearchComplete } = useSearch(); 
   const [searchTime, setSearchTime] = useState(0);
 
-  //favicon fetch
+  // favicon fetch
   useEffect(() => {
     results.forEach((result) => {
       fetch(`/api/loadFaviconFromDB?id=${result._id}`)
@@ -44,53 +43,45 @@ const ResultsPage: React.FC = () => {
     });
   }, [results]);
 
+  // Fetch search results when searchterm or page changes
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
-
-    if (searchterm) {
-      const startTime = Date.now();
-
-      timeoutId = setTimeout(() => {
-
-        setIsSearchComplete(false);
-        console.log(`Fetching results for: ${searchterm} with limit: ${limit} and page: ${page}`);
-        fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log('API response:', data);
-            setResults(data.results || []);
-            setTotalResults(data.totalResults || 0);
-            setIsSearchComplete(true);
-
-            const endTime = Date.now(); // Record the end time
-            setSearchTime((endTime - startTime) / 1000); // Calculate the search time in seconds
-          })
-          .catch((error) => {
-            console.error('Error fetching search results:', error);
-          });
-      }, 1500);
-    } else {
+    if (!searchterm) {
       setIsSearchComplete(true);
+      return;
     }
 
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+    const fetchData = async () => {
+      const startTime = Date.now();
+      setIsSearchComplete(false);
+
+      try {
+        const response = await fetch(`/api/search?searchterm=${encodeURIComponent(searchterm)}&limit=${limit}&page=${page}`);
+        const data = await response.json();
+        setResults(data.results || []);
+        setTotalResults(data.totalResults || 0);
+        setIsSearchComplete(true);
+
+        const endTime = Date.now(); // Record the end time
+        setSearchTime((endTime - startTime) / 1000); // Calculate the search time in seconds
+      } catch (error) {
+        console.error('Error fetching search results:', error);
+        setIsSearchComplete(true);
       }
     };
-    
+
+    fetchData();
   }, [searchterm, page, setIsSearchComplete]);
 
+  // Reset page to 1 when search term changes
   useEffect(() => {
-    // 検索ワードが変更されたときにページを1にリセット
     setPage(1);
   }, [searchterm]);
 
   const handlePageChange = (newPage: number) => {
-    //turn on loading spinner
+    // Turn on loading spinner
     setIsSearchComplete(false);
 
-    //clear the results and update the page
+    // Clear the results and update the page
     setResults([]);
     setTotalResults(0);
 
@@ -135,12 +126,11 @@ const ResultsPage: React.FC = () => {
 
   return (
     <>
-      {/* Search Form */}
       <SearchBar />
-
-      <p className="text-sm text-gray-500 text-left mt-4 mb-4 pl-2 pr-2">Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)</p>
-
-      {/* Results */}
+      <p className="text-sm text-gray-500 text-left mt-4 mb-4 pl-2 pr-2">
+        Search Results for &quot;{searchterm}&quot; ({totalResults} results, took {searchTime} seconds)
+      </p>
+      {/* Search results */}
       <ul className="space-y-6 w-full max-w-7xl">
         {results.length > 0 ? (
           results.map((result) => (
@@ -153,14 +143,12 @@ const ResultsPage: React.FC = () => {
                   <a href={result.url} target="_blank" rel="noopener noreferrer">{result.title}</a>
                 </h2>
               </div>
-
               <p className="text-gray-600 mt-2">{result.about.length > 100 ? result.about.substring(0, 100) + '...' : result.about}</p>
               <p className="text-gray-800 mt-2">{result.textSnippet.length > 100 ? result.textSnippet.substring(0, 100) + '...' : result.textSnippet}</p>
               <a href={result.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mt-2 block">Read more</a>
             </li>
           ))
         ) : (
-          //if isSearchComplete is false, show loading text instead of no results found
           isSearchComplete ? (
             <p className="text-gray-500 text-center">No results found.</p>
           ) : (
@@ -169,49 +157,52 @@ const ResultsPage: React.FC = () => {
         )}
       </ul>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-8 mb-8">
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page <= 1}
           className="mr-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
         >
-        ←
+          ←
         </button>
-      <div className="flex space-x-2 overflow-x-auto">
-      {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) =>
-        pageNum === '...' ? (
-          <span key={`dots-${index}`} className="px-4 py-2 text-gray-500" style={{ minWidth: '36px', textAlign: 'center' }}>
-            ...
-          </span>
-        ) : (
-          <a
-            key={`page-${pageNum}`}
-            onClick={() => handlePageChange(pageNum as number)}
-            className={`cursor-pointer px-4 py-2 border ${pageNum === page ? 'bg-blue-500 text-white shadow-neumorphism-button' : 'bg-gray-200 text-gray-700 shadow-neumorphism-button'} rounded-md`}
-            style={{ minWidth: '36px', textAlign: 'center' }} // 影が適切に表示されるように最小幅を設定
-          >
-            {pageNum}
-          </a>
-        )
-      )}
+        <div className="flex space-x-2 overflow-x-auto">
+          {generatePageNumbers(Math.ceil(totalResults / limit), page).map((pageNum, index) =>
+            pageNum === '...' ? (
+              <span key={`dots-${index}`} className="px-4 py-2 text-gray-500" style={{ minWidth: '36px', textAlign: 'center' }}>
+                ...
+              </span>
+            ) : (
+              <a
+                key={`page-${pageNum}`}
+                onClick={() => handlePageChange(pageNum as number)}
+                className={`cursor-pointer px-4 py-2 border ${pageNum === page ? 'bg-blue-500 text-white shadow-neumorphism-button' : 'bg-gray-200 text-gray-700 shadow-neumorphism-button'} rounded-md`}
+                style={{ minWidth: '36px', textAlign: 'center' }}
+              >
+                {pageNum}
+              </a>
+            )
+          )}
+        </div>
+        <span className="ml-2 mr-2 text-gray-700">{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page * limit >= totalResults}
+          className="ml-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
+        >
+          →
+        </button>
       </div>
-      <span className="ml-2 mr-2 text-gray-700">{`${((page - 1) * limit) + 1}-${Math.min(page * limit, totalResults)} of ${totalResults}`}</span>
-      <button
-      onClick={() => handlePageChange(page + 1)}
-      disabled={page * limit >= totalResults}
-      className="ml-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
-      >
-      →
-      </button>
-      </div>
-
-
     </>
   );
-  
-  
-  
+};
+
+const ResultsPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResultsContent />
+    </Suspense>
+  );
 };
 
 export default ResultsPage;
