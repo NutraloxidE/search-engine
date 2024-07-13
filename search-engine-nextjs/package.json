@@ -20,6 +20,7 @@
     "kuromoji": "^0.1.2",
     "mongoose": "^8.4.4",
     "next": "14.2.4",
+    "next-auth": "^4.24.7",
     "node-cache": "^5.1.2",
     "path": "^0.12.7",
     "puppeteer": "^22.12.1",

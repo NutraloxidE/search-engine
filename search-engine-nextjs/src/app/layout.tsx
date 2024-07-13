@@ -33,7 +33,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-custom-gradient min-h-screen pb-16`}>
         <SearchProvider>
-          <div className="flex flex-col items-center justify-start min-h-screen bg-cover bg-fixed mb-0 w-full" style={{ background: 'linear-gradient(to bottom right, rgba(var(--background-start-rgb), 1), rgba(var(--background-end-rgb), 1))', marginTop: '0', marginBottom: '0' }}>
+          <div className="flex flex-col items-center justify-start min-h-screen bg-cover bg-fixed mb-0 w-full"
+            style={{ background: 'linear-gradient(to bottom right, rgba(var(--background-start-rgb), 1), rgba(var(--background-end-rgb), 1))',
+            backgroundSize: 'cover', // 追加部分
+            marginTop: '0',
+            marginBottom: '0'
+          }}>
             {children}
             {/* Navigation Footer */}
             <footer className="fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 shadow-neumorphism">
