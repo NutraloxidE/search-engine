@@ -43,7 +43,6 @@ function hackerKiller(request: NextRequest) {
     '/admin',
     '/wp-admin',
     '/wp-login',
-    '/login',
     '/admin.php',
     '/wp-admin.php',
     '/wp-login.php',
@@ -54,7 +53,7 @@ function hackerKiller(request: NextRequest) {
 
   // if the request path is in the restricted path list, return a custom response
   if (restrictedPaths.some(path => pathname.includes(path))) {
-    return new Response('Fuck off', { status: 420 });
+    return new Response('404:Fuck off', { status: 420 });
   }
 
   // restricted pathに含まれない場合は、nullを返す
