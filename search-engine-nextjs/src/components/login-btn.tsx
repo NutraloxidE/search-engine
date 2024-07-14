@@ -28,7 +28,7 @@ export default function LoginBtn() {
     <>
       <button
         className="text-cyan-500"
-        onClick={() => signIn()}>外部アカウントでログイン
+        onClick={() => signIn()}>外部アカウントでサインイン
       </button>
     </>
   )

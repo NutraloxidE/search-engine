@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
     //if user is not logged in
     return (
       <div className="flex flex-col items-center justify-center w-full">
-        <h2 className="text-2xl font-semibold mb-4">ログイン</h2>
+        <h2 className="text-2xl font-semibold mb-4">サインイン</h2>
         <form className="w-full max-w-sm">
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="SignInId">
@@ -55,7 +55,7 @@ const SignIn: React.FC = () => {
               type="submit"
               className="mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
             >
-              ログイン
+              サインイン
             </button>
   
             {/*link for register page*/}
@@ -63,7 +63,7 @@ const SignIn: React.FC = () => {
               <button 
                 className="bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
               >
-                新規登録
+                新規登録ページへ
               </button>
             </Link>
           
