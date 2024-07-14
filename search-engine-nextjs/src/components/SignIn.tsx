@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
           <div className="flex-col items-center justify-between">
             <button
               type="submit"
-              className="mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
+              className="fuwafuwa mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
             >
               サインイン
             </button>
@@ -61,7 +61,7 @@ const SignIn: React.FC = () => {
             {/*link for register page*/}
             <Link href="/register">
               <button 
-                className="bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
+                className="fuwafuwa bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
               >
                 新規登録ページへ
               </button>

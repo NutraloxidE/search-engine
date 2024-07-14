@@ -48,7 +48,7 @@ export default function SearchBar() {
         />
         <button
           type="submit"
-          className="flex-shrink-0 bg-pastel-blue hover:bg-pastel-blue-dark text-sm text-white py-2 px-2 rounded-md shadow-neumorphism-button border-none"
+          className="fuwafuwa flex-shrink-0 bg-pastel-blue hover:bg-pastel-blue-dark text-sm text-white py-2 px-2 rounded-md shadow-neumorphism-button border-none"
         >
           Search
         </button>

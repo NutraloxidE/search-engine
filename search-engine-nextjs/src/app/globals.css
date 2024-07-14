@@ -34,3 +34,33 @@ input, textarea, select {
     text-wrap: balance;
   }
 }
+
+/**/
+
+.fuwafuwa {
+  display: inline-block; /* 要素をインラインブロックに設定 */
+  transition: transform 0.2s ease-in-out; /* 変換のトランジションを設定 */
+}
+
+.fuwafuwa:hover {
+  transform: translateY(-1px); /* hover時に上に5ピクセル移動 */
+  transform: scale(1.02); /* hover時に要素を拡大 */
+}
+
+.fuwafuwa:active {
+  transform: scale(0.95); /* クリック時に要素を少し縮小 */
+}
+
+.fuwafuwa-less {
+  display: inline-block; /* 要素をインラインブロックに設定 */
+  transition: transform 0.2s ease-in-out; /* 変換のトランジションを設定 */
+  backface-visibility: hidden; /* 要素の裏面を描画しない */
+}
+
+.fuwafuwa-less:hover {
+  transform: translateY(-0.5px) scale(1.005); /* hover時に上に0.5ピクセル移動し、要素を少し拡大 */
+}
+
+.fuwafuwa-less:active {
+  transform: scale(0.998); /* クリック時に要素を少し縮小 */
+}

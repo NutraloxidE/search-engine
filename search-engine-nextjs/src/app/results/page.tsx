@@ -134,7 +134,7 @@ const ResultsContent: React.FC = () => {
       <ul className="space-y-6 w-full max-w-7xl">
         {results.length > 0 ? (
           results.map((result) => (
-            <li key={result._id} className="ml-2 mr-2 px-4 py-4 bg-gray-200 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-md shadow-neumorphism hover:shadow-neumorphism-hover transition-shadow duration-200"> 
+            <li key={result._id} className="fuwafuwa-less ml-2 mr-2 px-4 py-4 bg-gray-200 bg-opacity-50 backdrop-filter backdrop-blur-lg rounded-md shadow-neumorphism hover:shadow-neumorphism-hover transition-shadow duration-200"> 
               {/* title and favicon */}
               <div className="flex items-center">
                 {favicons[result._id]?.startsWith('data:image/png;base64,') && 

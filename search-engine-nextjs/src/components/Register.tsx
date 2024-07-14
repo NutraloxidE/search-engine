@@ -89,7 +89,7 @@ const Register: React.FC = () => {
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           <button
             type="submit"
-            className="mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
+            className="fuwafuwa mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
           >
             登録
           </button>
@@ -97,7 +97,7 @@ const Register: React.FC = () => {
           {/*link for login page*/}
           <Link href="/SignIn">
             <button 
-              className="bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
+              className="fuwafuwa bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
             >
               アカウントをお持ちの方
             </button>
