@@ -7,34 +7,70 @@ import { useSession, signIn, signOut } from "next-auth/react"
 const Register: React.FC = () => {
   const { data: session } = useSession();
 
+  const [userName, setUserName] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  let [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    let isThereError = false;
+    errorMessage = '';
+
     if (password !== confirmPassword) {
-      setErrorMessage('パスワードが一致しません。');
-    } else {
-      // Submit the form
+      setErrorMessage(errorMessage + '\nパスワードが一致しません。');
+      isThereError = true;
+    };
+    
+    if (password.length < 8) {
+      setErrorMessage(errorMessage + '\nパスワードは8文字以上で入力してください。');
+      isThereError = true;
     }
+
+    if (userName.length < 1) {
+      setErrorMessage(errorMessage + '\nユーザー名を入力してください。');
+      isThereError = true;
+    }
+
+    if (email.length < 1) {
+      setErrorMessage(errorMessage + '\nメールアドレスを入力してください。');
+      isThereError = true;
+    }
+
+    //if there is no error, submit the form
+    if (!isThereError) {
+      setErrorMessage('');
+      console.log({userName, email, password, confirmPassword});
+      
+      fetch('/api/account/registeruser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({userName, email, password}),
+      })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Registration successful');
+          return response.json();
+        }else{
+          setErrorMessage('ユーザー登録に失敗しました、メールアドレスが既に登録されているか、もしくはサーバーに問題が発生しています。');
+          throw new Error('Registration failed');
+        }
+      })
+      .catch((error) => {
+        console.error('Registration error:', error);
+      });
+    }
+
   };
 
   return (
     <div className="mt-5 flex flex-col items-center justify-center w-full ">
       <h2 className="text-2xl font-semibold mb-4">新規登録</h2>
       <form className="w-full max-w-sm" onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="signInID">
-            サインインID (非公開)
-          </label>
-          <input
-            id="signInID"
-            type="text"
-            className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
-            placeholder="サインインID"
-          />
-        </div>
+
 
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="userName">
@@ -43,18 +79,20 @@ const Register: React.FC = () => {
           <input
             id="userName"
             type="text"
+            onChange={(e) => setUserName(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
             placeholder="ユーザー名"
           />
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="mailAddress">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
             メールアドレス
           </label>
           <input
-            id="mailAddress"
+            id="email"
             type="mail"
+            onChange={(e) => setemail(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
             placeholder="メールアドレス"
           />
@@ -67,6 +105,7 @@ const Register: React.FC = () => {
           <input
             id="password"
             type="password"
+            onChange={(e) => setPassword(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
             placeholder="パスワード"
           />
@@ -79,6 +118,7 @@ const Register: React.FC = () => {
           <input
             id="passwordConfirm"
             type="password"
+            onChange={(e) => setConfirmPassword(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
             placeholder="パスワード (再確認)"
           />
@@ -86,7 +126,7 @@ const Register: React.FC = () => {
 
         
         <div className="flex-col items-center justify-between">
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          {errorMessage && <p className="mb-2 text-red-500">{errorMessage}</p>}
           <button
             type="submit"
             className="fuwafuwa mr-2 bg-pastel-blue hover:bg-pastel-blue-dark text-white font-bold py-2 px-4 rounded shadow-neumorphism-button"
