@@ -52,7 +52,7 @@ input, textarea, select {
 }
 
 .fuwafuwa-less {
-  display: inline-block; /* 要素をインラインブロックに設定 */
+  display: block; /* 要素をブロックに設定 */
   transition: transform 0.2s ease-in-out; /* 変換のトランジションを設定 */
   backface-visibility: hidden; /* 要素の裏面を描画しない */
 }
