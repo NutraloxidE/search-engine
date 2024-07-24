@@ -29,14 +29,14 @@ const SignIn: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">サインイン</h2>
         <form className="w-full max-w-sm">
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="SignInId">
-              Sign in ID
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="E-mail">
+              E mail
             </label>
             <input
-              id="SignInId"
+              id="E-mail"
               type="text"
               className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
-              placeholder="Sign in ID"
+              placeholder="E Mail"
             />
           </div>
           <div className="mb-6">

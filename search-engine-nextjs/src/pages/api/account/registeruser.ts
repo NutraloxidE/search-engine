@@ -1,11 +1,9 @@
+//src\pages\api\account\registeruser.ts
 import connectDB from "@/utils/db";
 import user from "@/utils/DataUser";
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 
-
-
-// pages/api/register.js
 export default async (req:NextApiRequest, res:NextApiResponse) => {
   if (req.method === 'POST') {
     // POSTリクエストの場合、リクエストボディからユーザーデータを取得
@@ -25,6 +23,7 @@ export default async (req:NextApiRequest, res:NextApiResponse) => {
       }
 
       //save it to mongodb
+      await userGoingToBeCreated.hashPassword();
       await userGoingToBeCreated.save();
       console.log("User created successfully");
 
@@ -52,7 +51,14 @@ async function ValidateUserData(userGoingToBeCreated: any) {
     console.log("Email already exists");
     return false;
   }
-  
 
+  //check if the user name is valid
+  const existingUsername = await user.findOne({ userName: userGoingToBeCreated.userName });
+  if (existingUsername) {
+    console.log("Username already exists");
+    return false;
+  }
+  
+  console.log("Email is valid");
   return true;
 }

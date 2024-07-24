@@ -1,6 +1,7 @@
 // src/components/Register.tsx
 import React,{ useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import LoginBtn from './login-btn';
 import { useSession, signIn, signOut } from "next-auth/react"
 
@@ -91,6 +92,7 @@ const Register: React.FC = () => {
           </label>
           <input
             id="email"
+            name="email"
             type="mail"
             onChange={(e) => setemail(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
@@ -104,6 +106,7 @@ const Register: React.FC = () => {
           </label>
           <input
             id="password"
+            name="password"
             type="password"
             onChange={(e) => setPassword(e.target.value)}
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none shadow-neumorphism-input rounded-md"
