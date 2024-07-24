@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 
 interface IUser extends Document {
   nextauth_id?: string[];
+  session_id?: string;
   userName?: string;
   email: string;
   salt: string;
@@ -13,6 +14,7 @@ interface IUser extends Document {
 
 const UserSchema: Schema<IUser> = new Schema({
   nextauth_id: { type: [String], required: false },
+  session_id: { type: String, required: false },
   userName: { type: String, required: false },
   email: { type: String, required: true, unique: true },
   salt: { type: String, required: true },
