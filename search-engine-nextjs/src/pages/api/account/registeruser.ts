@@ -12,7 +12,7 @@ export default async (req:NextApiRequest, res:NextApiResponse) => {
     // ここでデータベースにユーザーデータを保存します
     try {
       await connectDB();
-
+      
       const userGoingToBeCreated = new user(userData);
       console.log(userGoingToBeCreated);
       

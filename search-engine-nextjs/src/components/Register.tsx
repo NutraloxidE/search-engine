@@ -7,6 +7,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 
 const Register: React.FC = () => {
   const { data: session } = useSession();
+  const router = useRouter();
 
   const [userName, setUserName] = useState('');
   const [email, setemail] = useState('');
@@ -17,7 +18,6 @@ const Register: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     let isThereError = false;
-    errorMessage = '';
 
     if (password !== confirmPassword) {
       setErrorMessage(errorMessage + '\nパスワードが一致しません。');
@@ -54,6 +54,7 @@ const Register: React.FC = () => {
       .then((response) => {
         if (response.ok) {
           console.log('Registration successful');
+          router.push('/register/complete');
           return response.json();
         }else{
           setErrorMessage('ユーザー登録に失敗しました、メールアドレスが既に登録されているか、もしくはサーバーに問題が発生しています。');
