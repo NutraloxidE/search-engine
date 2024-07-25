@@ -35,6 +35,9 @@ export default async function signInHandling (req: NextApiRequest, res: NextApiR
 
       await session.save();
 
+      console.log(`User ${email} signed in successfully with session ID: ${sessionId}`); // ログイン成功情報を表示
+
+
       res.setHeader('Set-Cookie', `sessionId=${sessionId}; HttpOnly; Path=/; Max-Age=3600`);
       return res.status(200).json({ message: 'Sign in successful' });
 
