@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 const connectDB = require('../../utils/db');
-import Data from '../../utils/Data';
+import Data from '../../utils/models/Data';
 import mongoose from 'mongoose';
 
 const loadFaviconFromDB = async (req: NextApiRequest, res: NextApiResponse) => {

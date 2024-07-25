@@ -1,6 +1,6 @@
 //src\pages\api\account\registeruser.ts
 import connectDB from "@/utils/db";
-import user from "@/utils/DataUser";
+import user from "@/utils/models/DataUser";
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 

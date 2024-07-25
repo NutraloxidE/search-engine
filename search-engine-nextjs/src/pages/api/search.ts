@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import mongoose from "mongoose";
 import connectDB from '../../utils/db';
-import Data from '../../utils/Data';
-import SearchHistory from '../../utils/DataSearchHistory';
+import Data from '../../utils/models/Data';
+import SearchHistory from '../../utils/models/DataSearchHistory';
 import * as kuromoji from 'kuromoji';
 const path = require('path');
 import { stopWords } from '../../utils/search-stopword';
