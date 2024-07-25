@@ -1,3 +1,4 @@
+//src\utils\db.js
 require('dotenv').config({ path: '../.env.local' });
 const mongoose = require('mongoose');
 
