@@ -190,7 +190,7 @@ const ResultsContent: React.FC = () => {
           disabled={page * limit >= totalResults}
           className="ml-2 w-18 px-4 py-2 bg-gray-200 text-gray-700 rounded-md shadow-neumorphism-button disabled:bg-gray-300"
         >
-          →
+          → 
         </button>
       </div>
     </>
