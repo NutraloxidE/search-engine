@@ -1,4 +1,4 @@
-//src\utils\DataUser.ts
+// src/utils/DataUser.ts
 import { Document, Schema, model, models } from 'mongoose';
 import bcrypt from 'bcrypt';
 
@@ -10,6 +10,8 @@ interface IUser extends Document {
   password: string;
   image?: string;
   emailVerified?: Date;
+  hashPassword(): Promise<void>;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const UserSchema: Schema<IUser> = new Schema({
